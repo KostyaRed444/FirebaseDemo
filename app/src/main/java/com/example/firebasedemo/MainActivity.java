@@ -1,10 +1,14 @@
 package com.example.firebasedemo;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.BundleCompat;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -13,47 +17,47 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity implements ValueEventListener {
-    Place city = new Place("Beijing", 80, 70);
+//    Place city = new Place("Sochi", 80, 70);
+
+    Place city;
+
+    EditText nameText;
+    EditText latText;
+    EditText lonText;
+
     DatabaseReference dbRef;
-    final String CHILD = "myplace123";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        nameText= (EditText) findViewById(R.id.name);
+        latText= (EditText) findViewById(R.id.lat);
+        lonText= (EditText) findViewById(R.id.lon);
 
+        Place city=new Place(nameText, latText, lonText);
         // получаем ссылку на облачную БД
         dbRef = FirebaseDatabase.getInstance().getReference();
-        dbRef.child(CHILD).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.d("mytag", "count: " + snapshot.getChildrenCount());
-                for (DataSnapshot s: snapshot.getChildren()) {
-                    Place p = s.getValue(Place.class);
-                    Log.d("mytag", "place: " + p);
-                }
-                
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.d("mytag", "error");
-            }
-        });
+        dbRef.child("myplace").addValueEventListener(this); // следим за изменением данных
         changePlace(city);
-        Log.d("mytag", "city changed");
-
-        // TODO: добавить отображение данных
 
 
     }
+//    public void onInputClick(View v) {
+//        String name=nameText.getText().toString();
+//        String lat=latText.getText().toString();
+//        String lon=lonText.getText().toString();
+//
+//        Intent i= new Intent(this, Place.class);
+//        i.putExtra("name", name);
+//        i.putExtra("lat", lat);
+//        i.putExtra("lon", lon);
+//        startActivity(i);
+//    }
 
     public void changePlace(Place p) {
-        dbRef.child(CHILD).setValue(p);
-        dbRef.child(CHILD).push().setValue(new Place("SPb", 11, 22));
-        dbRef.child(CHILD).push().setValue(new Place("Moscow", 33, 44));
-        //dbRef.child("myplace").
-        //dbRef.child("myplace").child("anotherplace").setValue(p);
+        dbRef.child("myplace").setValue(p);
+       // dbRef.child("myplace").push().setValue(p);
 
 
     }
@@ -62,8 +66,9 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
     @Override
     public void onDataChange(@NonNull DataSnapshot snapshot) {
         Place place = snapshot.getValue(Place.class);
+        Log.d("mytag", "key:"+snapshot.getKey());
+        Log.d("mytag", "place:"+place);
 
-        Log.d("mytag", "place: " + place);
         /*
        for (DataSnapshot s: snapshot.getChildren() ) {
            Log.d("mytag", "key: " + s.getKey());
