@@ -16,16 +16,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class MainActivity extends AppCompatActivity implements ValueEventListener {
-//    Place city = new Place("Sochi", 80, 70);
-
-    Place city;
+public class MainActivity extends AppCompatActivity {
 
     EditText nameText;
     EditText latText;
     EditText lonText;
 
-    DatabaseReference dbRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,53 +31,21 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
         latText= (EditText) findViewById(R.id.lat);
         lonText= (EditText) findViewById(R.id.lon);
 
-        Place city=new Place(nameText, latText, lonText);
-        // получаем ссылку на облачную БД
-        dbRef = FirebaseDatabase.getInstance().getReference();
-        dbRef.child("myplace").addValueEventListener(this); // следим за изменением данных
-        changePlace(city);
-
 
     }
-//    public void onInputClick(View v) {
-//        String name=nameText.getText().toString();
-//        String lat=latText.getText().toString();
-//        String lon=lonText.getText().toString();
-//
-//        Intent i= new Intent(this, Place.class);
-//        i.putExtra("name", name);
-//        i.putExtra("lat", lat);
-//        i.putExtra("lon", lon);
-//        startActivity(i);
-//    }
+    public void onInputClick(View v) {
+        String name=nameText.getText().toString();
+        String lat=latText.getText().toString();
+        String lon=lonText.getText().toString();
 
-    public void changePlace(Place p) {
-        dbRef.child("myplace").setValue(p);
-       // dbRef.child("myplace").push().setValue(p);
-
-
+        Intent i= new Intent(this, InputBase.class);
+        i.putExtra("name", name);
+        i.putExtra("lat", lat);
+        i.putExtra("lon", lon);
+        startActivity(i);
     }
 
+    
 
-    @Override
-    public void onDataChange(@NonNull DataSnapshot snapshot) {
-        Place place = snapshot.getValue(Place.class);
-        Log.d("mytag", "key:"+snapshot.getKey());
-        Log.d("mytag", "place:"+place);
 
-        /*
-       for (DataSnapshot s: snapshot.getChildren() ) {
-           Log.d("mytag", "key: " + s.getKey());
-           Place place = s.getValue(Place.class);
-           Log.d("mytag", "place: " + place);
-       }
-
-         */
-
-    }
-
-    @Override
-    public void onCancelled(@NonNull DatabaseError error) {
-
-    }
 }
